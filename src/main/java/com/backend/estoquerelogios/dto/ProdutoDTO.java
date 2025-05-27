@@ -1,38 +1,24 @@
-package com.backend.estoquerelogios.entities;
-import jakarta.persistence.*;
+package com.backend.estoquerelogios.dto;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "products")
-public class Produto {
+public class ProdutoDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false, unique = true)
     private String codigo;
-
-    @Column(nullable = false)
     private String descricao;
-
-    @Column(nullable = false)
     private BigDecimal precoUnitario;
+    private String unidadeMedida;
 
-    private LocalDateTime dataCadastro = LocalDateTime.now();
-
-    public Produto(Long id, String codigo, String descricao, BigDecimal precoUnitario, LocalDateTime dataCadastro) {
+    public ProdutoDTO(Long id, String codigo, String descricao, BigDecimal precoUnitario, String unidadeMedida) {
         this.id = id;
         this.codigo = codigo;
         this.descricao = descricao;
         this.precoUnitario = precoUnitario;
-        this.dataCadastro = dataCadastro;
+        this.unidadeMedida = unidadeMedida;
     }
 
-    public Produto() {
-
+    public ProdutoDTO() {
     }
 
     public Long getId() {
@@ -67,11 +53,12 @@ public class Produto {
         this.precoUnitario = precoUnitario;
     }
 
-    public LocalDateTime getDataCadastro() {
-        return dataCadastro;
+    public String getUnidadeMedida() {
+        return unidadeMedida;
     }
 
-    public void setDataCadastro(LocalDateTime dataCadastro) {
-        this.dataCadastro = dataCadastro;
+    public void setUnidadeMedida(String unidadeMedida) {
+        this.unidadeMedida = unidadeMedida;
     }
 }
+
