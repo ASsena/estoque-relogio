@@ -35,6 +35,9 @@ public class Produto {
 
     }
 
+    public Produto(String codigo, String descricao, BigDecimal precoUnitario, String unidadeMedida) {
+    }
+
     public Long getId() {
         return id;
     }

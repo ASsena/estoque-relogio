@@ -8,14 +8,12 @@ public class ProdutoDTO {
     private String codigo;
     private String descricao;
     private BigDecimal precoUnitario;
-    private String unidadeMedida;
 
-    public ProdutoDTO(Long id, String codigo, String descricao, BigDecimal precoUnitario, String unidadeMedida) {
+    public ProdutoDTO(Long id, String codigo, String descricao, BigDecimal precoUnitario) {
         this.id = id;
         this.codigo = codigo;
         this.descricao = descricao;
         this.precoUnitario = precoUnitario;
-        this.unidadeMedida = unidadeMedida;
     }
 
     public ProdutoDTO() {
@@ -53,12 +51,5 @@ public class ProdutoDTO {
         this.precoUnitario = precoUnitario;
     }
 
-    public String getUnidadeMedida() {
-        return unidadeMedida;
-    }
-
-    public void setUnidadeMedida(String unidadeMedida) {
-        this.unidadeMedida = unidadeMedida;
-    }
 }
 
