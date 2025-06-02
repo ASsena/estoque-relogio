@@ -21,14 +21,18 @@ public class Produto {
     @Column(nullable = false)
     private BigDecimal precoUnitario;
 
+    @Column(nullable = false)
+    private String nome;
+
     private LocalDateTime dataCadastro = LocalDateTime.now();
 
-    public Produto(Long id, String codigo, String descricao, BigDecimal precoUnitario, LocalDateTime dataCadastro) {
+    public Produto(Long id, String codigo, String descricao, BigDecimal precoUnitario, LocalDateTime dataCadastro, String nome) {
         this.id = id;
         this.codigo = codigo;
         this.descricao = descricao;
         this.precoUnitario = precoUnitario;
         this.dataCadastro = dataCadastro;
+        this.nome = nome;
     }
 
     public Produto() {
@@ -76,5 +80,13 @@ public class Produto {
 
     public void setDataCadastro(LocalDateTime dataCadastro) {
         this.dataCadastro = dataCadastro;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 }

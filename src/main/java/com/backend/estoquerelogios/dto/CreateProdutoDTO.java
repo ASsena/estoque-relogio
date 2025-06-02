@@ -1,5 +1,6 @@
 package com.backend.estoquerelogios.dto;
 
+import com.backend.estoquerelogios.entities.Produto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -7,25 +8,26 @@ import java.math.BigDecimal;
 
 public class CreateProdutoDTO {
 
-    @NotBlank
+    @NotBlank(message = "Preencha o campo do código")
     private String codigo;
 
-    @NotBlank
+    @NotBlank(message = "Preencha o campo da descrição")
     private String descricao;
 
-    @NotNull
+    @NotNull(message = "Preencha o campo do preço")
     private BigDecimal precoUnitario;
 
-    @NotBlank
-    private String unidadeMedida;
+    @NotNull(message = "Preencha o campo do nome")
+    private String nome;
+
 
     public CreateProdutoDTO() {}
 
-    public CreateProdutoDTO(String codigo, String descricao, BigDecimal precoUnitario, String unidadeMedida) {
+    public CreateProdutoDTO(String codigo, String descricao, BigDecimal precoUnitario, String nome) {
         this.codigo = codigo;
         this.descricao = descricao;
         this.precoUnitario = precoUnitario;
-        this.unidadeMedida = unidadeMedida;
+        this.nome = nome;
     }
 
     public String getCodigo() {
@@ -52,12 +54,12 @@ public class CreateProdutoDTO {
         this.precoUnitario = precoUnitario;
     }
 
-    public String getUnidadeMedida() {
-        return unidadeMedida;
+    public String getNome() {
+        return nome;
     }
 
-    public void setUnidadeMedida(String unidadeMedida) {
-        this.unidadeMedida = unidadeMedida;
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 }
 

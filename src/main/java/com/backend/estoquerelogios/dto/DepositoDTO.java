@@ -1,5 +1,7 @@
 package com.backend.estoquerelogios.dto;
 
+import com.backend.estoquerelogios.entities.Deposito;
+
 public class DepositoDTO {
 
     private Long id;
@@ -10,6 +12,12 @@ public class DepositoDTO {
         this.id = id;
         this.nome = nome;
         this.localizacao = localizacao;
+    }
+
+    public DepositoDTO(Deposito deposito) {
+        this.id = deposito.getId();
+        this.nome = deposito.getNome();
+        this.localizacao = deposito.getLocalizacao();
     }
 
     public DepositoDTO() {}

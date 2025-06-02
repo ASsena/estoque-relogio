@@ -4,9 +4,9 @@ import jakarta.validation.constraints.NotBlank;
 
 public class CreateDepositorioDTO {
 
-    @NotBlank
+    @NotBlank(message = "Preencha o campo de nome")
     private String nome;
-
+    @NotBlank(message = "Preencha o campo de nome")
     private String localizacao;
 
     public CreateDepositorioDTO() {}
