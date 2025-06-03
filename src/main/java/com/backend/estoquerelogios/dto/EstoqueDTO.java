@@ -8,15 +8,13 @@ public class EstoqueDTO {
     private Long produtoId;
     private String produtoDescricao;
     private Long depositoId;
-    private String depositoNome;
     private Integer quantidade;
 
-    public EstoqueDTO(Long id, Long produtoId, String produtoDescricao, Long depositoId, String depositoNome, Integer quantidade) {
+    public EstoqueDTO(Long id, Long produtoId, String produtoDescricao, Long depositoId, Integer quantidade) {
         this.id = id;
         this.produtoId = produtoId;
         this.produtoDescricao = produtoDescricao;
         this.depositoId = depositoId;
-        this.depositoNome = depositoNome;
         this.quantidade = quantidade;
     }
 
@@ -25,7 +23,6 @@ public class EstoqueDTO {
         this.produtoId = estoque.getProduto().getId();
         this.produtoDescricao = estoque.getProduto().getDescricao();
         this.depositoId = estoque.getDeposito().getId();
-        this.depositoNome = estoque.getDeposito().getNome();
         this.quantidade = estoque.getQuantidade();
     }
 
@@ -62,14 +59,6 @@ public class EstoqueDTO {
 
     public void setDepositoId(Long depositoId) {
         this.depositoId = depositoId;
-    }
-
-    public String getDepositoNome() {
-        return depositoNome;
-    }
-
-    public void setDepositoNome(String depositoNome) {
-        this.depositoNome = depositoNome;
     }
 
     public Integer getQuantidade() {

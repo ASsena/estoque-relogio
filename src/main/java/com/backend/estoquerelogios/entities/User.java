@@ -17,13 +17,13 @@ public class User {
     private String senha;
 
     @Column(nullable = false)
-    private String role;
+    private String roles;
 
-    public User(Long id, String username, String senha, String role) {
+    public User(Long id, String username, String senha, String roles) {
         this.id = id;
         this.username = username;
         this.senha = senha;
-        this.role = role;
+        this.roles = roles;
     }
 
     public User() {
@@ -53,12 +53,12 @@ public class User {
         this.senha = senha;
     }
 
-    public String getRole() {
-        return role;
+    public String getRoles() {
+        return roles;
     }
 
     public void setRole(String role) {
-        this.role = role;
+        this.roles = role;
     }
 }
 

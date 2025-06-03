@@ -14,7 +14,7 @@ public class Estoque {
     @JoinColumn(nullable = false)
     private Produto produto;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(nullable = false)
     private Deposito deposito;
 

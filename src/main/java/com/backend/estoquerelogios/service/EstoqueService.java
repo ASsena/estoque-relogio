@@ -1,18 +1,10 @@
 package com.backend.estoquerelogios.service;
 
-import com.backend.estoquerelogios.dto.CreateEstoqueDTO;
-import com.backend.estoquerelogios.dto.DepositoDTO;
-import com.backend.estoquerelogios.dto.EstoqueDTO;
-import com.backend.estoquerelogios.dto.ProdutoDTO;
-import com.backend.estoquerelogios.entities.Deposito;
-import com.backend.estoquerelogios.entities.Estoque;
-import com.backend.estoquerelogios.entities.Produto;
+import com.backend.estoquerelogios.dto.*;
+import com.backend.estoquerelogios.entities.*;
 import com.backend.estoquerelogios.exception.NaoExistenteException;
-import com.backend.estoquerelogios.exception.ProdutoNaoExistente;
 import com.backend.estoquerelogios.exception.ValorInvalidoException;
-import com.backend.estoquerelogios.repository.DepositoRepository;
-import com.backend.estoquerelogios.repository.EstoqueRepository;
-import com.backend.estoquerelogios.repository.ProdutoRepository;
+import com.backend.estoquerelogios.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -26,88 +18,124 @@ public class EstoqueService {
     private final EstoqueRepository estoqueRepository;
     private final DepositoRepository depositoRepository;
     private final ProdutoRepository produtoRepository;
-    private Map<Long, EstoqueDTO> estoqueCache = new HashMap<>();
+    private final MovimentoRepository movimentoRepository;
 
-    public EstoqueService(EstoqueRepository estoqueRepository, DepositoRepository depositoRepository, ProdutoRepository produtoRepository) {
+    private final Map<Long, EstoqueDTO> estoqueCache = new HashMap<>();
+
+    public EstoqueService(
+            EstoqueRepository estoqueRepository,
+            DepositoRepository depositoRepository,
+            ProdutoRepository produtoRepository,
+            MovimentoRepository movimentoRepository) {
         this.estoqueRepository = estoqueRepository;
         this.depositoRepository = depositoRepository;
         this.produtoRepository = produtoRepository;
+        this.movimentoRepository = movimentoRepository;
     }
 
-    public List<EstoqueDTO> findAll() {
-        var estoques = estoqueRepository.findAll();
-        List<ProdutoDTO> produtos = estoques.stream()
-                .map(p -> produtoRepository.findById(p.getProduto().getId())
-                        .orElseThrow(() -> new ProdutoNaoExistente("Produto com ID " + p.getProduto().getId() + " não encontrado")))
-                .map(ProdutoDTO::new)
-                .collect(Collectors.toList());
-        List<DepositoDTO> depositos = estoques.stream()
-                .map(d -> depositoRepository.findById(d.getDeposito().getId()))
-                        .orElseThrow(() -> new ProdutoNaoExistente("Produto com ID " + p.getProduto().getId() + " não encontrado")))
-                .map(ProdutoDTO::new)
-                .collect(Collectors.toList());
+    public EstoqueDTO getEstoqueById(Long id) {
+        return estoqueCache.computeIfAbsent(id, this::buscarEstoqueDTOOuLancar);
+    }
 
-
+    public List<EstoqueResponseDTO> listarTodos() {
+        return estoqueRepository.findAll().stream()
+                .map(this::converterParaEstoqueResponseDTO)
+                .collect(Collectors.toList());
     }
 
     @Transactional
-    public void adicionarEstoque(CreateEstoqueDTO estoqueDTO) {
+    public void adicionarEstoque(CreateEstoqueDTO dto) {
+        validarEstoqueDTO(dto);
+
+        Produto produto = buscarProdutoOuLancar(dto.getProdutoId());
+        Deposito deposito = buscarDepositoOuLancar(dto.getDepositoId());
+
         Estoque estoque = new Estoque();
-        var produtoEstoque = produtoRepository.findById(estoqueDTO.getProdutoId());
-        var depositoEstoque = depositoRepository.findById(estoqueDTO.getDepositoId());
-        if(depositoEstoque.isEmpty()) {
-            throw new NaoExistenteException("Depósito não encontrado");
-        }
-        if(produtoEstoque.isEmpty()) {
-            throw new NaoExistenteException("Produto não encontrado");
-        }
-        if(estoqueDTO.getQuantidade() == null || estoqueDTO.getQuantidade() < 0) {
-            throw new ValorInvalidoException("Quantidade deve ser maior que 0");
-        }
-        estoque.setDeposito(depositoEstoque.get());
-        estoque.setProduto(produtoEstoque.get());
-        estoque.setQuantidade(estoqueDTO.getQuantidade());
+        estoque.setProduto(produto);
+        estoque.setDeposito(deposito);
+        estoque.setQuantidade(dto.getQuantidade());
+
         estoqueRepository.save(estoque);
     }
 
-    public BigDecimal ValorTotalEstoque(){
-        List<Estoque> estoque = estoqueRepository.findAll();
-        List<Produto> produtos = produtoRepository.findAll();
-        BigDecimal valorTotal = BigDecimal.ZERO;
-        for(Produto produto : produtos){
-            for (Estoque estoqueP : estoque){
-                if(estoqueP.getProduto().getId().equals(produto.getId())){
-                    valorTotal.add(produto.getPrecoUnitario().multiply(BigDecimal.valueOf(estoqueP.getQuantidade())));
-                }
-            }
-        }
-        return valorTotal;
+    public BigDecimal calcularValorTotalEstoque() {
+        return estoqueRepository.calcularValorTotalEstoque();
     }
 
     @Transactional
-    public DepositoDTO updateDeposito(DepositoDTO depositoDTO) {
-        Deposito deposito = depositoRepository.findById(depositoDTO.getId())
-                .orElseThrow( () -> new NaoExistenteException("Deposito não encontrado com ID: " + depositoDTO.getId()));
+    public EstoqueDTO atualizarEstoque(EstoqueDTO dto) {
+        if (dto.getId() == null) return null;
 
-        if (depositoDTO.getNome() != null ) {
-            deposito.setNome(depositoDTO.getNome());
+        Estoque estoque = buscarEstoqueOuLancar(dto.getId());
+
+        if (dto.getProdutoId() != null) {
+            Produto produto = buscarProdutoOuLancar(dto.getProdutoId());
+            estoque.setProduto(produto);
         }
-        if(depositoDTO.getLocalizacao() != null){
-            deposito.setLocalizacao(depositoDTO.getLocalizacao());
+
+        if (dto.getDepositoId() != null) {
+            Deposito deposito = buscarDepositoOuLancar(dto.getDepositoId());
+            estoque.setDeposito(deposito);
         }
-        depositoRepository.save(deposito);
-        return new DepositoDTO(deposito);
+
+        if (dto.getQuantidade() != null) {
+            if (dto.getQuantidade() < 0) {
+                throw new ValorInvalidoException("Quantidade deve ser maior que 0");
+            }
+            estoque.setQuantidade(dto.getQuantidade());
+        }
+
+        Estoque atualizado = estoqueRepository.save(estoque);
+        return new EstoqueDTO(atualizado);
     }
 
     @Transactional
     public void removerEstoque(Long id) {
-        var deposito = depositoRepository.findById(id).orElseThrow(
-                () -> new NaoExistenteException(
-                        "Não é possível remover depósito com ID: " + id  + " pois ele não existe"));
-        depositosCache.remove(deposito.getId());
-        depositoRepository.delete(deposito);
+        Estoque estoque = buscarEstoqueOuLancar(id);
+        estoqueCache.remove(id);
+        estoqueRepository.delete(estoque);
     }
 
+    @Transactional
+    public void removerTodosEstoques() {
+        estoqueCache.clear();
+        estoqueRepository.deleteAll();
+    }
 
+    // ========================
+    // Métodos auxiliares
+    // ========================
 
+    private EstoqueDTO buscarEstoqueDTOOuLancar(Long id) {
+        Estoque estoque = buscarEstoqueOuLancar(id);
+        return new EstoqueDTO(estoque);
+    }
+
+    private Estoque buscarEstoqueOuLancar(Long id) {
+        return estoqueRepository.findById(id)
+                .orElseThrow(() -> new NaoExistenteException("Estoque não encontrado com ID: " + id));
+    }
+
+    private Produto buscarProdutoOuLancar(Long id) {
+        return produtoRepository.findById(id)
+                .orElseThrow(() -> new NaoExistenteException("Produto não encontrado com ID: " + id));
+    }
+
+    private Deposito buscarDepositoOuLancar(Long id) {
+        return depositoRepository.findById(id)
+                .orElseThrow(() -> new NaoExistenteException("Depósito não encontrado com ID: " + id));
+    }
+
+    private void validarEstoqueDTO(CreateEstoqueDTO dto) {
+        if (dto.getQuantidade() == null || dto.getQuantidade() < 0) {
+            throw new ValorInvalidoException("Quantidade deve ser maior que 0");
+        }
+    }
+
+    private EstoqueResponseDTO converterParaEstoqueResponseDTO(Estoque estoque) {
+        ProdutoDTO produto = new ProdutoDTO(buscarProdutoOuLancar(estoque.getProduto().getId()));
+        DepositoDTO deposito = new DepositoDTO(buscarDepositoOuLancar(estoque.getDeposito().getId()));
+        return new EstoqueResponseDTO(deposito, produto, estoque.getQuantidade());
+    }
 }
+

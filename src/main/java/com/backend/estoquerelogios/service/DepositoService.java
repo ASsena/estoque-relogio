@@ -1,6 +1,6 @@
 package com.backend.estoquerelogios.service;
 
-import com.backend.estoquerelogios.dto.CreateDepositorioDTO;
+import com.backend.estoquerelogios.dto.CreateDepositoDTO;
 import com.backend.estoquerelogios.dto.DepositoDTO;
 import com.backend.estoquerelogios.entities.Deposito;
 import com.backend.estoquerelogios.exception.JaExistenteException;
@@ -44,7 +44,7 @@ public class DepositoService {
 
 
     @Transactional
-    public void adicionarDeposito(CreateDepositorioDTO depositoDTO) {
+    public void adicionarDeposito(CreateDepositoDTO depositoDTO) {
         Deposito deposito = new Deposito();
         var depositoBanco = depositoRepository.findByNome(depositoDTO.getNome());
         if(depositoBanco.isPresent()){

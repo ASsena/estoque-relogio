@@ -1,6 +1,6 @@
 package com.backend.estoquerelogios.controller;
 
-import com.backend.estoquerelogios.dto.CreateDepositorioDTO;
+import com.backend.estoquerelogios.dto.CreateDepositoDTO;
 import com.backend.estoquerelogios.dto.DepositoDTO;
 import com.backend.estoquerelogios.service.DepositoService;
 import jakarta.validation.Valid;
@@ -19,7 +19,7 @@ public class DepositoController {
     }
 
     @PostMapping("create")
-    public ResponseEntity<Object> create(@RequestBody @Valid CreateDepositorioDTO depositorioDTO) {
+    public ResponseEntity<Object> create(@RequestBody @Valid CreateDepositoDTO depositorioDTO) {
         depositoService.adicionarDeposito(depositorioDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

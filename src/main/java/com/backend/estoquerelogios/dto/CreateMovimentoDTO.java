@@ -5,26 +5,29 @@ import jakarta.validation.constraints.NotNull;
 
 public class CreateMovimentoDTO {
 
-    @NotNull
+    @NotNull(message = "Preencha o id do produto")
     private Long produtoId;
 
-    @NotNull
+    @NotNull(message = "Preencha o tipo de movimentação")
     private TipoMovimento tipo;
 
-    @NotNull
+    @NotNull(message = "Preencha a quantidade movimentada")
     private Integer quantidade;
 
     private Long origemId;
     private Long destinoId;
 
+    private Long estoqueId;
+
     public CreateMovimentoDTO() {}
 
-    public CreateMovimentoDTO(Long produtoId, TipoMovimento tipo, Integer quantidade, Long origemId, Long destinoId) {
+    public CreateMovimentoDTO(Long produtoId, TipoMovimento tipo, Integer quantidade, Long origemId, Long destinoId, Long estoqueId) {
         this.produtoId = produtoId;
         this.tipo = tipo;
         this.quantidade = quantidade;
         this.origemId = origemId;
         this.destinoId = destinoId;
+        this.estoqueId = estoqueId;
     }
 
     public Long getProdutoId() {
@@ -65,6 +68,14 @@ public class CreateMovimentoDTO {
 
     public void setDestinoId(Long destinoId) {
         this.destinoId = destinoId;
+    }
+
+    public Long getEstoqueId() {
+        return estoqueId;
+    }
+
+    public void setEstoqueId(Long estoqueId) {
+        this.estoqueId = estoqueId;
     }
 }
 

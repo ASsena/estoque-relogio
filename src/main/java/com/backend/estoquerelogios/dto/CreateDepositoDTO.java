@@ -2,16 +2,16 @@ package com.backend.estoquerelogios.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
-public class CreateDepositorioDTO {
+public class CreateDepositoDTO {
 
     @NotBlank(message = "Preencha o campo de nome")
     private String nome;
-    @NotBlank(message = "Preencha o campo de nome")
+    @NotBlank(message = "Preencha o campo de localização")
     private String localizacao;
 
-    public CreateDepositorioDTO() {}
+    public CreateDepositoDTO() {}
 
-    public CreateDepositorioDTO(String nome, String localizacao) {
+    public CreateDepositoDTO(String nome, String localizacao) {
         this.nome = nome;
         this.localizacao = localizacao;
     }
