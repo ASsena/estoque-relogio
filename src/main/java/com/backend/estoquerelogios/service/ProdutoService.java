@@ -55,8 +55,8 @@ public class ProdutoService {
     }
 
     @Transactional
-    public ProdutoDTO updateProduto(ProdutoDTO produtoDTO) {
-        Produto produto = produtoRepository.findById(produtoDTO.getId())
+    public ProdutoDTO updateProduto(ProdutoDTO produtoDTO, Long id) {
+        Produto produto = produtoRepository.findById(id)
                 .orElseThrow( () -> new NaoExistenteException("Produto não encontrado com ID: " + produtoDTO.getId()));
 
         if (produtoDTO.getDescricao() != null ) {
@@ -76,10 +76,10 @@ public class ProdutoService {
     }
 
     @Transactional
-    public void removerProduto(Long id) {
-        var produto = produtoRepository.findById(id).orElseThrow(
+    public void removerProduto(String codigo) {
+        var produto = produtoRepository.findByCodigo(codigo).orElseThrow(
                 () -> new NaoExistenteException(
-                        "Não é possível remover produto com ID: " + id  + " pois ele não existe"));
+                        "Não é possível remover produto com o código: " + codigo  + " pois ele não existe"));
                 produtoCache.remove(produto.getCodigo());
                 produtoRepository.delete(produto);
     }

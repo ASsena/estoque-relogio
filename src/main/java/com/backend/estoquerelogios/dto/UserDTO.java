@@ -1,26 +1,28 @@
 package com.backend.estoquerelogios.dto;
 
+import com.backend.estoquerelogios.entities.Role;
+
 public class UserDTO {
 
-    private Long id;
     private String username;
-    private String role;
+    private String password;
 
-    public UserDTO(Long id, String username, String role) {
-        this.id = id;
+
+    public UserDTO(Long id, String username, String password) {
         this.username = username;
-        this.role = role;
+        this.password = password;
+
     }
 
     public UserDTO() {
     }
 
-    public Long getId() {
-        return id;
+    public String getPassword() {
+        return password;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getUsername() {
@@ -31,12 +33,5 @@ public class UserDTO {
         this.username = username;
     }
 
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
 }
 

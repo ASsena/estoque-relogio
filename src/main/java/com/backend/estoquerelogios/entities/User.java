@@ -1,6 +1,7 @@
 package com.backend.estoquerelogios.entities;
 
 import jakarta.persistence.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @Table(name = "users")
@@ -17,9 +18,9 @@ public class User {
     private String senha;
 
     @Column(nullable = false)
-    private String roles;
+    private Role roles;
 
-    public User(Long id, String username, String senha, String roles) {
+    public User(Long id, String username, String senha, Role roles) {
         this.id = id;
         this.username = username;
         this.senha = senha;
@@ -53,12 +54,16 @@ public class User {
         this.senha = senha;
     }
 
-    public String getRoles() {
+    public Role getRoles() {
         return roles;
     }
 
-    public void setRole(String role) {
-        this.roles = role;
+    public void setRoles(Role roles) {
+        this.roles = roles;
+    }
+
+    public boolean loginIsCorrect(String senha, PasswordEncoder passwordEncoder){
+        return passwordEncoder.matches(senha, this.senha);
     }
 }
 

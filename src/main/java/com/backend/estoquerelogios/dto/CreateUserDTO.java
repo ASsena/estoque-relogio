@@ -1,5 +1,6 @@
 package com.backend.estoquerelogios.dto;
 
+import com.backend.estoquerelogios.entities.Role;
 import jakarta.validation.constraints.NotBlank;
 
 public class CreateUserDTO {
@@ -11,11 +12,11 @@ public class CreateUserDTO {
     private String senha;
 
     @NotBlank
-    private String role;
+    private Role role;
 
     public CreateUserDTO() {}
 
-    public CreateUserDTO(String username, String senha, String role) {
+    public CreateUserDTO(String username, String senha, Role role) {
         this.username = username;
         this.senha = senha;
         this.role = role;
@@ -37,11 +38,11 @@ public class CreateUserDTO {
         this.senha = senha;
     }
 
-    public String getRole() {
+    public @NotBlank Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(@NotBlank Role role) {
         this.role = role;
     }
 }

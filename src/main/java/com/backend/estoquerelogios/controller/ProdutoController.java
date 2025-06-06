@@ -23,15 +23,15 @@ public class ProdutoController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PutMapping("update")
-    public ResponseEntity<Object> update(@RequestBody ProdutoDTO produto) {
-        produtoService.updateProduto(produto);
+    @PutMapping("{id}")
+    public ResponseEntity<Object> update(@RequestBody ProdutoDTO produto, @PathVariable Long id) {
+        produtoService.updateProduto(produto, id);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("{id}")
-    public ResponseEntity<Object> delete(@PathVariable Long id) {
-        produtoService.removerProduto(id);
+    @DeleteMapping("{codigo}")
+    public ResponseEntity<Object> delete(@PathVariable String codigo) {
+        produtoService.removerProduto(codigo);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -40,7 +40,7 @@ public class ProdutoController {
         return ResponseEntity.ok(produtoService.findAll());
     }
 
-    @GetMapping("serch-codigo/{codigo}")
+    @GetMapping("{codigo}")
     public ResponseEntity<Object> getByCodigo(@PathVariable String codigo) {
         return ResponseEntity.ok(produtoService.produtoFindByCodigo(codigo));
     }

@@ -45,4 +45,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(ex.getStatus()).body(erro);
     }
 
+    @ExceptionHandler(LoginIncorretoException.class)
+    public ResponseEntity<ErroResponse> handleLoginIncorretoException(LoginIncorretoException ex) {
+        ErroResponse erro = new ErroResponse("LOGIN_INCORRETO", ex.getMessage());
+        return ResponseEntity.status(ex.getStatus()).body(erro);
+    }
+
+
 }
