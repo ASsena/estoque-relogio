@@ -2,15 +2,10 @@ spring:
   application:
     name: estoque-relogios
   datasource:
-    url: ${DB_URL}
+    url: jdbc:mysql://mysql-81358b9-projetointegrador.c.aivencloud.com:25899/gerenciamento_estoque
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
   jpa:
     show-sql: true
     hibernate:
       ddl-auto: update
-jwt:
-  private:
-    key: "classpath:chave_privada.key"
-  public:
-    key: "classpath:chave_publica.pub"
