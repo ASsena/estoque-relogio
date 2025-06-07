@@ -2,9 +2,6 @@
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
 name: Build and deploy JAR app to Azure Web App - gerencimento-estoque
-env:
-  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-  DB_USERNAME: ${{ secrets.DB_USERNAME }}
 on:
   push:
     branches:
@@ -41,6 +38,9 @@ jobs:
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    env:
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
     permissions:
       id-token: write #This is required for requesting the JWT
       contents: read #This is required for actions/checkout
