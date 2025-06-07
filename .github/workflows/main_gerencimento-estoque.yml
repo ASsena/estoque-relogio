@@ -2,20 +2,19 @@
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
 name: Build and deploy JAR app to Azure Web App - gerencimento-estoque
+env:
+  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+  DB_USERNAME: ${{ secrets.DB_USERNAME }}
 on:
   push:
     branches:
       - main
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
       contents: read #This is required for actions/checkout
-    env:
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      DB_USERNAME: ${{ secrets.DB_USERNAME }}
     steps:
       - uses: actions/checkout@v4
 
@@ -40,9 +39,6 @@ jobs:
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    env:
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      DB_USERNAME: ${{ secrets.DB_USERNAME }}
     permissions:
       id-token: write #This is required for requesting the JWT
       contents: read #This is required for actions/checkout
@@ -59,10 +55,6 @@ jobs:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_5255587B78644AC7B2ACE86467D39788 }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_8F5AEF504F6C4EDC81B811050E8703CC }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_2C712ED711834A2FA7A21D05E5B7EC11 }}
-
-      - name: get-secrets
-        run: |
-          echo "Usuário: $DB_USERNAME"
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
