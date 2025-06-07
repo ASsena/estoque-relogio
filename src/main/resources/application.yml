@@ -9,3 +9,8 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
+jwt:
+  public:
+    key: "classpath:chave_publica.pub"
+  private:
+    key: "classpath:chave_privada.key"
