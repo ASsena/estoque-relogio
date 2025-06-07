@@ -60,6 +60,10 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_8F5AEF504F6C4EDC81B811050E8703CC }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_2C712ED711834A2FA7A21D05E5B7EC11 }}
 
+      - name: get-secrets
+        run: |
+          echo "Usuário: $DB_USERNAME"
+
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
