@@ -29,7 +29,6 @@ public class EstoqueController {
 
     @GetMapping("all")
     public ResponseEntity<List<EstoqueResponseDTO>> findAll() {
-        System.out.println("Teste4");
         List<EstoqueResponseDTO> estoques = estoqueService.listarTodos();
         return ResponseEntity.ok(estoques);
     }
