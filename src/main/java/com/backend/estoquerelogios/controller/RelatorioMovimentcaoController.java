@@ -2,6 +2,7 @@ package com.backend.estoquerelogios.controller;
 
 import com.backend.estoquerelogios.repository.MovimentoRepository;
 import com.backend.estoquerelogios.service.RelatorioMovimentacaoService;
+import jakarta.servlet.http.HttpServletResponse;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +20,10 @@ public class RelatorioMovimentcaoController {
     @Autowired
     private MovimentoRepository movimentoRepository;
 
-    @GetMapping
-    public ResponseEntity<String> gerarRelatorioMovimentacao(@RequestParam String caminho) throws JRException {
-        System.out.println(caminho);
-        relatorioMovimentacaoService.gerarRelatorioMovimentacao(caminho);
+    @GetMapping("movimentacao")
+    public ResponseEntity<String> gerarRelatorioMovimentacao(HttpServletResponse response) throws Exception {
+        relatorioMovimentacaoService.gerarRelatorioMovimentacao(response);
 
-        return ResponseEntity.ok("Relatório criado com sucesso" + caminho);
+        return ResponseEntity.ok("Relatório criado com sucesso" + response);
     }
 }
