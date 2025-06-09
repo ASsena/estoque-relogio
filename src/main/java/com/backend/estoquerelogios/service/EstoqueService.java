@@ -19,29 +19,40 @@ public class EstoqueService {
     private final DepositoRepository depositoRepository;
     private final ProdutoRepository produtoRepository;
     private final MovimentoRepository movimentoRepository;
+    private final CacheSerivece cacheSerivece;
 
-    private final Map<Long, EstoqueDTO> estoqueCache = new HashMap<>();
 
     public EstoqueService(
             EstoqueRepository estoqueRepository,
             DepositoRepository depositoRepository,
             ProdutoRepository produtoRepository,
-            MovimentoRepository movimentoRepository) {
+            MovimentoRepository movimentoRepository,
+            CacheSerivece cacheSerivece) {
         this.estoqueRepository = estoqueRepository;
         this.depositoRepository = depositoRepository;
         this.produtoRepository = produtoRepository;
         this.movimentoRepository = movimentoRepository;
+        this.cacheSerivece = cacheSerivece;
     }
 
     public EstoqueDTO getEstoqueById(Long id) {
-        return estoqueCache.computeIfAbsent(id, this::buscarEstoqueDTOOuLancar);
+        return cacheSerivece.getEstoqueCache().computeIfAbsent(id, this::buscarEstoqueDTOOuLancar);
     }
 
     public List<EstoqueResponseDTO> listarTodos() {
-        return estoqueRepository.findAll().stream()
-                .map(this::converterParaEstoqueResponseDTO)
-                .collect(Collectors.toList());
+        List<Estoque> todosDoBanco = estoqueRepository.findAll();
+
+        for (Estoque estoque : todosDoBanco) {
+            String chave = cacheSerivece.gerarChaveEstoque(estoque);
+            if (!cacheSerivece.getEstoqueReponseCache().containsKey(chave)) {
+                EstoqueResponseDTO dto = converterParaEstoqueResponseDTO(estoque);
+                cacheSerivece.getEstoqueReponseCache().put(chave, dto);
+            }
+        }
+
+        return new ArrayList<>(cacheSerivece.getEstoqueReponseCache().values());
     }
+
 
     @Transactional
     public void adicionarEstoque(CreateEstoqueDTO dto) {
@@ -96,13 +107,13 @@ public class EstoqueService {
     @Transactional
     public void removerEstoque(Long id) {
         Estoque estoque = buscarEstoqueOuLancar(id);
-        estoqueCache.remove(id);
+        cacheSerivece.getEstoqueCache().remove(id);
         estoqueRepository.delete(estoque);
     }
 
     @Transactional
     public void removerTodosEstoques() {
-        estoqueCache.clear();
+        cacheSerivece.getEstoqueCache().clear();
         estoqueRepository.deleteAll();
     }
 
@@ -141,5 +152,6 @@ public class EstoqueService {
         DepositoDTO deposito = new DepositoDTO(buscarDepositoOuLancar(estoque.getDeposito().getId()));
         return new EstoqueResponseDTO(deposito, produto, estoque.getQuantidade());
     }
+
 }
 
