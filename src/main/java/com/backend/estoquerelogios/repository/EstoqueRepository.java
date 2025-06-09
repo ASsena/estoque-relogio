@@ -12,7 +12,10 @@ import java.math.BigDecimal;
 public interface EstoqueRepository extends JpaRepository<Estoque, Long> {
 
     @Query("SELECT SUM(e.quantidade * p.precoUnitario) " +
-            "FROM Estoque e JOIN e.produto p")
-    BigDecimal calcularValorTotalEstoque();
+            "FROM Estoque e JOIN e.produto p " +
+            "WHERE e.deposito = :deposito")
+
+    BigDecimal calcularValorTotalPorDeposito(Deposito deposito);
+
 
 }

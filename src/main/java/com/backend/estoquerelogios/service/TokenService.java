@@ -38,7 +38,7 @@ public class TokenService {
         }
 
         var now = Instant.now();
-        var expir = 300L;
+        var expir = 30000L;
 
 
         var scopes = userrpository.get().getRoles().toString();

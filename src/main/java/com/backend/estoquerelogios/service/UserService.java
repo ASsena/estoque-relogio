@@ -3,6 +3,7 @@ package com.backend.estoquerelogios.service;
 import com.backend.estoquerelogios.dto.CreateUserDTO;
 import com.backend.estoquerelogios.entities.Role;
 import com.backend.estoquerelogios.entities.User;
+import com.backend.estoquerelogios.exception.JaExistenteException;
 import com.backend.estoquerelogios.exception.NaoExistenteException;
 import com.backend.estoquerelogios.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,7 +28,7 @@ public class UserService {
 
 
         userRepository.findByUsername(infoUser.getUsername()).ifPresentOrElse(
-                users -> {throw new NaoExistenteException("Usuário com o username: " + infoUser.getUsername() + " não encontrado!");},
+                users -> {throw new JaExistenteException("Usuário com o username: " + infoUser.getUsername() + " já existe!");},
                 () -> {
                     var user = new User();
                     user.setUsername(infoUser.getUsername());

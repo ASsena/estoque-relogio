@@ -28,12 +28,9 @@ public class PublicController {
     @PostMapping("/create")
     @Transactional
     public ResponseEntity<?> createUserPost( @RequestBody CreateUserDTO infoUser){
-        try{
-            userService.createUser(infoUser);
-            return ResponseEntity.ok().build();
-        }catch (ResponseStatusException e){
-            return ResponseEntity.badRequest().body("user already exists");
-        }
+        userService.createUser(infoUser);
+        return ResponseEntity.ok().build();
+
 
     }
 

@@ -58,8 +58,12 @@ public class EstoqueService {
         estoqueRepository.save(estoque);
     }
 
-    public BigDecimal calcularValorTotalEstoque() {
-        return estoqueRepository.calcularValorTotalEstoque();
+    public BigDecimal calcularValorTotalEstoque(Long idDeposito) {
+        var deposito = depositoRepository.findById(idDeposito);
+        if(deposito.isEmpty()){
+            throw new NaoExistenteException("Depósito não existe");
+        }
+        return estoqueRepository.calcularValorTotalPorDeposito(deposito.get());
     }
 
     @Transactional

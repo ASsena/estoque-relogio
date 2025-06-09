@@ -61,9 +61,9 @@ public class EstoqueController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("valor-total")
-    public ResponseEntity<BigDecimal> getValorTotal() {
-        return ResponseEntity.ok(estoqueService.calcularValorTotalEstoque());
+    @GetMapping("valor-total/{id}")
+    public ResponseEntity<BigDecimal> getValorTotal(@PathVariable Long id) {
+        return ResponseEntity.ok(estoqueService.calcularValorTotalEstoque(id));
     }
 
 

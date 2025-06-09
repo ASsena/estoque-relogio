@@ -17,6 +17,10 @@ public class MovimentacaoController {
     @PostMapping("cadastrar")
     public ResponseEntity cadastrarMovimentacao(@RequestBody CreateMovimentoDTO createMovimentoDTO){
         movimentacaoService.registrarMovimentacao(createMovimentoDTO);
+        System.out.println(createMovimentoDTO.getDestinoId());
+        System.out.println(createMovimentoDTO.getEstoqueId());
+        System.out.println(createMovimentoDTO.getQuantidade());
+        System.out.println(createMovimentoDTO.getProdutoId());
         return ResponseEntity.ok().build();
     }
 
