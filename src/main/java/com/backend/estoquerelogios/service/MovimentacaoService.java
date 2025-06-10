@@ -83,27 +83,27 @@ public class MovimentacaoService {
             }
 
             case SAIDA -> {
-                    Deposito deposito = depositoRepository.findById(movimentoDTO.getEstoqueId()).orElseThrow(
-                            () -> new NaoExistenteException("Depósito não encontrado"));
-                    List<Estoque> estoque = estoqueRepository.findByDeposito(deposito);
-                    for(Estoque estoque1 : estoque){
-                        if(estoque1.getProduto().equals(produto)){
-                            String chave = cacheSerivice.gerarChaveEstoque(estoque1);
-                            EstoqueResponseDTO estoqueresponse = cacheSerivice.getEstoqueReponseCache().get(chave);
-                            if(estoque1.getQuantidade() < movimentoDTO.getQuantidade()){
-                                throw new ValorInvalidoException("Quantidade de movimentação maior do que a quantidade em estoque");
-                            }
-
-                            estoqueresponse.setQuantidade(estoque1.getQuantidade() - movimentoDTO.getQuantidade());
-                            cacheSerivice.getEstoqueReponseCache().put(chave, estoqueresponse);
-                            estoque1.setQuantidade(estoque1.getQuantidade() + movimentoDTO.getQuantidade());
-                            System.out.println(estoque1.getProduto().getNome());
-
-                            movimento.setOrigem(estoque1);
-                            movimento.setDestino(estoque1);
-                            estoqueRepository.saveAndFlush(estoque1);
+                Deposito deposito = depositoRepository.findById(movimentoDTO.getEstoqueId()).orElseThrow(
+                        () -> new NaoExistenteException("Depósito não encontrado"));
+                List<Estoque> estoque = estoqueRepository.findByDeposito(deposito);
+                for(Estoque estoque1 : estoque){
+                    if(estoque1.getProduto().equals(produto)){
+                        String chave = cacheSerivice.gerarChaveEstoque(estoque1);
+                        EstoqueResponseDTO estoqueresponse = cacheSerivice.getEstoqueReponseCache().get(chave);
+                        if(estoque1.getQuantidade() < movimentoDTO.getQuantidade()){
+                            throw new ValorInvalidoException("Quantidade de movimentação maior do que a quantidade em estoque");
                         }
+
+                        estoqueresponse.setQuantidade(estoque1.getQuantidade() - movimentoDTO.getQuantidade());
+                        cacheSerivice.getEstoqueReponseCache().put(chave, estoqueresponse);
+                        estoque1.setQuantidade(estoque1.getQuantidade() + movimentoDTO.getQuantidade());
+                        System.out.println(estoque1.getProduto().getNome());
+
+                        movimento.setOrigem(estoque1);
+                        movimento.setDestino(estoque1);
+                        estoqueRepository.saveAndFlush(estoque1);
                     }
+                }
             }
 
 
@@ -116,33 +116,44 @@ public class MovimentacaoService {
                 List<Estoque> origem = estoqueRepository.findByDeposito(depositoOrigem);
                 List<Estoque> destino = estoqueRepository.findByDeposito(depositoDestino);
 
-                Estoque estoqueOrigem = origem.stream().map(estoque -> {
-                            if(estoque.getProduto().equals(produto) && estoque.getQuantidade() >= movimentoDTO.getQuantidade()){
-                                estoque.setQuantidade(estoque.getQuantidade() - movimentoDTO.getQuantidade());
-                            }
-                            return estoque;
-                        }
-                ).findFirst().orElseThrow(() -> new NaoExistenteException("Depósito de origem não existe"));
+                Estoque estoqueOrigem = origem.stream()
+                        .filter(e -> e.getProduto().equals(produto) && e.getQuantidade() >= movimentoDTO.getQuantidade())
+                        .findFirst()
+                        .orElseThrow(() -> new NaoExistenteException("Produto não encontrado ou quantidade insuficiente"));
 
-                Estoque estoqueDestino = destino.stream().map(estoque -> {
-                    estoque.setQuantidade(estoque.getQuantidade() + movimentoDTO.getQuantidade());
-                    return estoque;
+                estoqueOrigem.setQuantidade(estoqueOrigem.getQuantidade() - movimentoDTO.getQuantidade());
+
+                Estoque estoqueDestino = destino.stream()
+                        .filter(e -> e.getProduto().equals(produto))
+                        .findFirst()
+                        .orElse(null);
+
+                if (estoqueDestino == null) {
+                    estoqueDestino = new Estoque();
+                    estoqueDestino.setProduto(produto);
+                    estoqueDestino.setDeposito(depositoDestino);
+                    estoqueDestino.setQuantidade(0);
                 }
-                ).findFirst().orElseThrow(() -> new NaoExistenteException("Depósito não existe"));
 
+                estoqueDestino.setQuantidade(estoqueDestino.getQuantidade() + movimentoDTO.getQuantidade());
 
+// Atualiza cache diretamente com os objetos atualizados
+                cacheSerivice.getEstoqueReponseCache().put(
+                        cacheSerivice.gerarChaveEstoque(estoqueOrigem),
+                        new EstoqueResponseDTO(estoqueOrigem)
+                );
 
-                String chaveOrigem = cacheSerivice.gerarChaveEstoque(estoqueOrigem);
-                String chaveDestino = cacheSerivice.gerarChaveEstoque(estoqueDestino);
+                cacheSerivice.getEstoqueReponseCache().put(
+                        cacheSerivice.gerarChaveEstoque(estoqueDestino),
+                        new EstoqueResponseDTO(estoqueDestino)
+                );
 
-                EstoqueResponseDTO estoqueResponseOrigem = cacheSerivice.getEstoqueReponseCache().get(chaveOrigem);
-                EstoqueResponseDTO estoqueResponseDestino = cacheSerivice.getEstoqueReponseCache().get(chaveDestino);
-                estoqueResponseOrigem.setQuantidade(estoqueResponseOrigem.getQuantidade() - movimentoDTO.getQuantidade());
-                estoqueResponseDestino.setQuantidade(estoqueResponseDestino.getQuantidade() + movimentoDTO.getQuantidade());
+// Persiste
+                movimento.setOrigem(estoqueOrigem);
+                movimento.setDestino(estoqueDestino);
+                estoqueRepository.saveAndFlush(estoqueOrigem);
+                estoqueRepository.saveAndFlush(estoqueDestino);
 
-                cacheSerivice.getEstoqueReponseCache().put(chaveOrigem, new EstoqueResponseDTO(estoqueOrigem));
-                System.out.println(cacheSerivice.getEstoqueReponseCache().put(chaveOrigem, new EstoqueResponseDTO(estoqueDestino)));
-                cacheSerivice.getEstoqueReponseCache().put(chaveDestino, new EstoqueResponseDTO(estoqueDestino));
 
 
                 movimento.setOrigem(estoqueOrigem);
