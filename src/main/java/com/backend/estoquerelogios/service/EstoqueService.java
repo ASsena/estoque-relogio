@@ -117,9 +117,6 @@ public class EstoqueService {
         estoqueRepository.deleteAll();
     }
 
-    // ========================
-    // Métodos auxiliares
-    // ========================
 
     private EstoqueDTO buscarEstoqueDTOOuLancar(Long id) {
         Estoque estoque = buscarEstoqueOuLancar(id);

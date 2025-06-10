@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface EstoqueRepository extends JpaRepository<Estoque, Long> {
@@ -16,6 +18,8 @@ public interface EstoqueRepository extends JpaRepository<Estoque, Long> {
             "WHERE e.deposito = :deposito")
 
     BigDecimal calcularValorTotalPorDeposito(Deposito deposito);
+
+    List<Estoque> findByDeposito(Deposito deposito);
 
 
 }

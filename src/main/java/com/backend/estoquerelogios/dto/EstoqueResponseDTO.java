@@ -1,5 +1,7 @@
 package com.backend.estoquerelogios.dto;
 
+import com.backend.estoquerelogios.entities.Estoque;
+
 public class EstoqueResponseDTO{
 
         private DepositoDTO depositoDTO;
@@ -10,6 +12,12 @@ public class EstoqueResponseDTO{
         this.depositoDTO = depositoDTO;
         this.produtoDTO = produtoDTO;
         this.quantidade = quantidade;
+    }
+
+    public EstoqueResponseDTO(Estoque estoque) {
+        this.depositoDTO = new DepositoDTO(estoque.getDeposito());
+        this.produtoDTO = new ProdutoDTO(estoque.getProduto());
+        this.quantidade = estoque.getQuantidade();
     }
 
     public EstoqueResponseDTO() {
