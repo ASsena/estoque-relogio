@@ -14,22 +14,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+
 @Service
 public class RelatorioMovimentacaoService {
 
     @Autowired
     MovimentoRepository movimentoRepository;
 
-    public void gerarRelatorioMovimentacao(HttpServletResponse response) throws Exception{
-
+    public void gerarRelatorioMovimentacao(HttpServletResponse response) throws Exception {
         List<Movimento> movimentacoes = movimentoRepository.findAll();
 
         List<RelatorioMovimentoDTO> dados = movimentacoes.stream().map(RelatorioMovimentoDTO::new).collect(Collectors.toList());
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(dados);
-        System.out.println(dados.size());
 
         Map<String, Object> parametros = new HashMap<>();
-
         parametros.put("título", "Relatório de Movimentações");
 
         JasperReport jasperReport = JasperCompileManager.compileReport(
@@ -37,11 +35,10 @@ public class RelatorioMovimentacaoService {
         );
 
         response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "inline; filename=relatorio.pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=relatorio.pdf");
 
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parametros, dataSource);
-        JasperExportManager.exportReportToPdfFile(jasperPrint, response.getOutputStream().toString());
-
-
+        JasperExportManager.exportReportToPdfStream(jasperPrint, response.getOutputStream());
+        response.getOutputStream().flush();
     }
 }
