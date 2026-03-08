@@ -21,6 +21,8 @@ public class DepositoController {
     @PostMapping("create")
     public ResponseEntity<Object> create(@RequestBody @Valid CreateDepositoDTO depositorioDTO) {
         depositoService.adicionarDeposito(depositorioDTO);
+        depositoService.findAll();
+
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
